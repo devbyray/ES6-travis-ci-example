@@ -26,6 +26,7 @@
     "eslint-plugin-react": "^7.10.0",
     "gulp": "^3.9.1",
     "gulp-eslint": "^5.0.0",
+    "gulp-stylelint": "^7.0.0",
     "gulp-util": "^3.0.8",
     "require-dir": "^1.0.0",
     "stylelint": "^9.4.0",
