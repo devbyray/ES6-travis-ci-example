@@ -12,3 +12,6 @@ script: gulp
 cache:
   directories:
     - "node_modules"
+
+after_success:
+  - ./shell/PR-comment.sh
