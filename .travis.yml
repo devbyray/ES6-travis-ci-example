@@ -14,4 +14,4 @@ cache:
     - "node_modules"
 
 after_success:
-  - ./shell/PR-comment.sh
+  - sh ./shell/PR-comment.sh
