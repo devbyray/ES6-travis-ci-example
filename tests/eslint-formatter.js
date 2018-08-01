@@ -69,6 +69,7 @@
 
         if(report.errors.length > 0 || report.warnings.length > 0) {
             process.env.PR_COMMENT = finalComment;
+            return finalComment;
         }
     };
 // }
