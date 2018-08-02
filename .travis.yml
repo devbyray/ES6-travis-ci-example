@@ -18,6 +18,3 @@ cache:
 
 after_success:
   - sh ./shell/PR-comment.sh
-
-after_failure:
-  - sh ./shell/PR-comment-files.sh
