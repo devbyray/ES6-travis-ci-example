@@ -39,9 +39,9 @@ module.exports = function(results) {
             return (
                 `
                     \n
-                    **${msg.type.toUpperCase()}** : ${msg.ruleId} \n
+                    <strong>${msg.type.toUpperCase()}</strong> : ${msg.ruleId} \n
                     ${msg.message} \n
-                    _${msg.filePath}:${msg.line}:${msg.column}_ \n
+                    <em>${msg.filePath}:${msg.line}:${msg.column}</em> \n
                     \n
 
                 `
@@ -54,9 +54,8 @@ module.exports = function(results) {
 
     if (report.errors.length > 0 || report.warnings.length > 0) {
         warningsAndErrors = `
-            **Errors**: ${report.errors.length} \n
-            **Warnings**: ${report.warnings.length}
-
+            <strong>Errors</strong>: ${report.errors.length} \n
+            <strong>Warnings</strong>: ${report.warnings.length}
         `
     }
 
@@ -71,7 +70,7 @@ module.exports = function(results) {
     if(report.errors.length > 0 || report.warnings.length > 0) {
 
         axios.post(`https://api.github.com/repos/${REPO_SLUG}/issues/${PR_ID}/comments?access_token=${GH_TOKEN}`, {
-            body: marked(finalComment),
+            body: marked(finalComment.toString()),
             })
             .then(function (response) {
                 console.log(response);
