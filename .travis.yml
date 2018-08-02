@@ -2,6 +2,9 @@ language: node_js
 node_js:
   - "7"
 
+env:
+  - PR_COMMENT=false
+
 before_install:
   - npm install -g gulp-cli
 
