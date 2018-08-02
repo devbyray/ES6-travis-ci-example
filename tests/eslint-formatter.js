@@ -1,3 +1,10 @@
+const axios = require('axios');
+
+const REPO_SLUG = process.env.TRAVIS_REPO_SLUG;
+const PR_ID = process.env.TRAVIS_PULL_REQUEST;
+
+axios.defaults.headers.common['Authorization'] = process.env.GITHUB_TOKEN;
+
 // if(process.env.TRAVIS_REPO_SLUG) {
     module.exports = function(results) {
         // accumulate the errors and warnings
@@ -68,8 +75,20 @@
 
 
         if(report.errors.length > 0 || report.warnings.length > 0) {
-            process.env['PR_COMMENT'] = finalComment;
-            return finalComment;
+            // process.env['PR_COMMENT'] = finalComment;
+
+            axios.post(`https://api.github.com/repos/${REPO_SLUG}/issues/${PR_ID}/comments`, {
+                body: finalComment,
+              })
+              .then(function (response) {
+                console.log(response);
+              })
+              .catch(function (error) {
+                console.error(error);
+              });
         }
+
+        return finalComment;
+
     };
 // }
