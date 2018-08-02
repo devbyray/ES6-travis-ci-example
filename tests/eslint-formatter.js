@@ -1,6 +1,8 @@
 const axios = require('axios');
 const marked = require('marked');
 
+axios.defaults.headers.post['Content-Type'] = 'application/vnd.github.v3.html+json';
+
 const REPO_SLUG = process.env.TRAVIS_REPO_SLUG;
 const PR_ID = process.env.TRAVIS_PULL_REQUEST;
 const GH_TOKEN = process.env.GITHUB_TOKEN;
