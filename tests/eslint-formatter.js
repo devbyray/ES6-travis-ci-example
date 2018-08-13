@@ -1,6 +1,4 @@
 const axios = require('axios');
-const marked = require('marked');
-
 axios.defaults.headers.post['Content-Type'] = 'application/vnd.github.v3.html+json';
 
 const REPO_SLUG = process.env.TRAVIS_REPO_SLUG;
@@ -39,48 +37,78 @@ module.exports = function(results) {
     if (report.errors.length > 0 || report.warnings.length > 0) {
         detailedReport = report.errors.concat(report.warnings).map(function(msg) {
             return (
-                `
-                    \n
-                    <strong>${msg.type.toUpperCase()}</strong> : ${msg.ruleId} \n
-                    ${msg.message} \n
-                    <em>${msg.filePath}:${msg.line}:${msg.column}</em> \n
-                    \n
-
+                `   <p>
+                    **${msg.type.toUpperCase()}** : ${msg.ruleId} <br />
+                    ${msg.message} <br />
+                    __${msg.filePath}:${msg.line}:${msg.column}__ <br />
+                    </p>
                 `
             );
-        })
-        .join("\n");
+        }).join('');
     }
 
     let warningsAndErrors = '';
 
     if (report.errors.length > 0 || report.warnings.length > 0) {
         warningsAndErrors = `
-            <strong>Errors</strong>: ${report.errors.length} \n
-            <strong>Warnings</strong>: ${report.warnings.length}
+        <p>**Errors**: ${report.errors.length} <br />
+        **Warnings**: ${report.warnings.length} </p>
         `
     }
 
 
-    const finalComment = `
-        Total: ${warningsAndErrors} \n
-
-        Report: ${detailedReport}
-    `;
+    const finalComment = '<p>**Total**:' + warningsAndErrors + '</p>' +
+        '<p>**Report**: ' + detailedReport + '</p>';
 
 
     if(report.errors.length > 0 || report.warnings.length > 0) {
 
-        axios.post(`https://api.github.com/repos/${REPO_SLUG}/issues/${PR_ID}/comments?access_token=${GH_TOKEN}`, {
-            body: marked(finalComment.toString()),
-            })
+        let sanitisedComment = sanitizeTemplateString(finalComment);
+
+        getCommentInMarkdown(JSON.parse(sanitisedComment))
             .then(function (response) {
-                console.log(response);
+                let data = JSON.stringify(response.data, jsonEscape);
+                // data = data.startsWith('"') ? data[0] = '' : data;
+                console.log('MARKED: ', data);
+                postGithubComment(data);
             })
             .catch(function (error) {
                 console.error(error);
             });
+
     }
+
+    function getCommentInMarkdown(markDownComment) {
+        return axios.post(`https://api.github.com/markdown?access_token=${GH_TOKEN}`, {
+            text: markDownComment,
+            mode: "gfm",
+            context: "github/gollum"
+        })
+    }
+
+    function postGithubComment(comment) {
+        return axios.post(`https://api.github.com/repos/${REPO_SLUG}/issues/${PR_ID}/comments?access_token=${GH_TOKEN}`, {
+                    body: comment,
+                })
+                .then(function (response) {
+                    // console.log('Posted comment!');
+                    // console.log(response);
+                })
+                .catch(function (error) {
+                    console.error('Didn\'t Posted comment!');
+                    console.error(error);
+                });
+    }
+
+    function sanitizeTemplateString(templateString) {
+        return JSON.stringify(templateString);
+    }
+
+    function jsonEscape(key, str)  {
+        if (typeof(str)!="string") return str;
+        return str.replace(/\n/g, "");
+    }
+    // console.log('finalComment: ', finalComment)
 
     return finalComment;
 
