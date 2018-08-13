@@ -40,7 +40,7 @@ module.exports = function(results) {
                 `   <p>
                     **${msg.type.toUpperCase()}** : ${msg.ruleId} <br />
                     ${msg.message} <br />
-                    __${msg.filePath}:${msg.line}:${msg.column}__ <br />
+                    __${msg.filePath.replace('/home/travis/build/', '')}:${msg.line}:${msg.column}__ <br />
                     </p>
                 `
             );
