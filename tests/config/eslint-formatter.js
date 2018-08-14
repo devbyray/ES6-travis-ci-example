@@ -1,9 +1,22 @@
 const axios = require('axios');
-axios.defaults.headers.post['Content-Type'] = 'application/vnd.github.v3.html+json';
 
-const REPO_SLUG = process.env.TRAVIS_REPO_SLUG;
-const PR_ID = process.env.TRAVIS_PULL_REQUEST;
-const GH_TOKEN = process.env.GITHUB_TOKEN;
+const GET_COMMENT_IN_MARKDOWN = require('../github/getCommentInMarkdown.js');
+const POST_GITHUB_COMMENT = require('../github/postGithubComment.js');
+
+const GITHUB = moduleIsAvailable('../../github.json') ? require('../../github.json') : false;
+
+const REPO_SLUG = process.env.TRAVIS_REPO_SLUG || GITHUB.repo;
+const PR_ID = process.env.TRAVIS_PULL_REQUEST || GITHUB.pr_id;
+const GH_TOKEN = process.env.GITHUB_TOKEN || GITHUB.token;
+
+function moduleIsAvailable (path) {
+    try {
+        require.resolve(path);
+        return true;
+    } catch (e) {
+        return false;
+    }
+}
 
 module.exports = function(results) {
     // accumulate the errors and warnings
@@ -36,68 +49,48 @@ module.exports = function(results) {
 
     if (report.errors.length > 0 || report.warnings.length > 0) {
         detailedReport = report.errors.concat(report.warnings).map(function(msg) {
-            return (
-                `   <p>
-                    **${msg.type.toUpperCase()}** : ${msg.ruleId} <br />
-                    ${msg.message} <br />
-                    __${msg.filePath.replace('/home/travis/build/', '')}:${msg.line}:${msg.column}__ <br />
-                    </p>
-                `
-            );
+            let reportItem = '';
+            reportItem+= '<p>'
+            reportItem+= '**' + msg.type.toUpperCase() + '** : ' + msg.ruleId + '<br />';
+            reportItem+= msg.message + ' <br />';
+            reportItem+= '__' + msg.filePath.replace('/home/travis/build/', '') + ':' + msg.line + ':' + msg.column + '__ <br />';
+            reportItem+= '</p>';
+
+            return reportItem;
         }).join('');
     }
 
     let warningsAndErrors = '';
 
     if (report.errors.length > 0 || report.warnings.length > 0) {
-        warningsAndErrors = `
-        <p>**Errors**: ${report.errors.length} <br />
-        **Warnings**: ${report.warnings.length} </p>
-        `
+        warningsAndErrors = '';
+        warningsAndErrors+= '**ERRORS**: ' + report.errors.length + ' <br />';
+        warningsAndErrors+= '**WARNINGS**: ' + report.warnings.length + '️ </p>';
     }
 
 
-    const finalComment = '<p>**Total**:' + warningsAndErrors + '</p>' +
-        '<p>**Report**: ' + detailedReport + '</p>';
+    let finalComment = '';
+    finalComment+= '<h2>Total:</h2> ' + warningsAndErrors +' \n';
+    finalComment+= '<br />';
+    finalComment+= '<h2>Report:</h2>' + detailedReport + '\n';
 
 
     if(report.errors.length > 0 || report.warnings.length > 0) {
 
         let sanitisedComment = sanitizeTemplateString(finalComment);
 
-        getCommentInMarkdown(JSON.parse(sanitisedComment))
+        GET_COMMENT_IN_MARKDOWN(JSON.parse(sanitisedComment), GH_TOKEN)
             .then(function (response) {
                 let data = JSON.stringify(response.data, jsonEscape);
-                // data = data.startsWith('"') ? data[0] = '' : data;
+                data[0] = '';
+                data[data.length -1] = '';
                 console.log('MARKED: ', data);
-                postGithubComment(data);
+                POST_GITHUB_COMMENT(data, REPO_SLUG, PR_ID, GH_TOKEN);
             })
             .catch(function (error) {
                 console.error(error);
             });
 
-    }
-
-    function getCommentInMarkdown(markDownComment) {
-        return axios.post(`https://api.github.com/markdown?access_token=${GH_TOKEN}`, {
-            text: markDownComment,
-            mode: "gfm",
-            context: "github/gollum"
-        })
-    }
-
-    function postGithubComment(comment) {
-        return axios.post(`https://api.github.com/repos/${REPO_SLUG}/issues/${PR_ID}/comments?access_token=${GH_TOKEN}`, {
-                    body: comment,
-                })
-                .then(function (response) {
-                    // console.log('Posted comment!');
-                    // console.log(response);
-                })
-                .catch(function (error) {
-                    console.error('Didn\'t Posted comment!');
-                    console.error(error);
-                });
     }
 
     function sanitizeTemplateString(templateString) {
