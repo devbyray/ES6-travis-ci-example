@@ -2,6 +2,9 @@ language: node_js
 node_js:
   - "7"
 
+env:
+  - PR_COMMENT=false
+
 before_install:
   - npm install -g gulp-cli
 
@@ -12,3 +15,6 @@ script: gulp
 cache:
   directories:
     - "node_modules"
+
+after_success:
+  - sh ./shell/PR-comment.sh
