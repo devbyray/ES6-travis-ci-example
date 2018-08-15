@@ -1,5 +1,3 @@
-const axios = require('axios');
-
 const GET_COMMENT_IN_MARKDOWN = require('../github/getCommentInMarkdown.js');
 const POST_GITHUB_COMMENT = require('../github/postGithubComment.js');
 
@@ -60,19 +58,7 @@ module.exports = function(results) {
         }).join('');
     }
 
-    let warningsAndErrors = '';
-
-    if (report.errors.length > 0 || report.warnings.length > 0) {
-        warningsAndErrors = '';
-        warningsAndErrors+= '**ERRORS**: ' + report.errors.length + ' <br />';
-        warningsAndErrors+= '**WARNINGS**: ' + report.warnings.length + '️ </p>';
-    }
-
-
-    let finalComment = '';
-    finalComment+= '<h2>Total:</h2> ' + warningsAndErrors +' \n';
-    finalComment+= '<br />';
-    finalComment+= '<h2>Report:</h2>' + detailedReport + '\n';
+    let finalComment = '<h2>ESLINT Report:</h2>' + detailedReport + '\n';
 
 
     if(report.errors.length > 0 || report.warnings.length > 0) {
