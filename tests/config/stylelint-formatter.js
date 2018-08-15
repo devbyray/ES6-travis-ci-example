@@ -24,7 +24,7 @@ module.exports = function(results) {
         let { warnings: warnings, source: fileName } = resultItem;
 
         console.log('fileName:', fileName);
-        let resultItemText = '**File: __' + fileName.replace('/home/travis/build/', '') + '__  **';
+        let resultItemText = '### File: __' + fileName.replace('/home/travis/build/', '') + '__';
 
         const fileErrors = warnings.map(warningItem => {
 
@@ -32,6 +32,7 @@ module.exports = function(results) {
             warningReportItem+= '**' + warningItem.severity.toUpperCase() + '** : ' + warningItem.rule + '<br />';
             warningReportItem+= warningItem.text + ' <br />';
             warningReportItem+= '</p>';
+            warningReportItem+= '<hr />';
 
             return warningReportItem;
 
