@@ -4,6 +4,7 @@ const STYLELINTFORMATTER = require('../config/stylelint-formatter')
 const POST_GITHUB_COMMIT_STATUS = require('../github/postGithubCommitStatus.js')
 const IS_MODULE_AVAILABLE = require('../config/isModuleAvailable')
 const GITHUB = IS_MODULE_AVAILABLE('../../github.json') ? require('../../github.json') : false
+const LINT_IGNORE = require('../../lint-ignore.json')
 
 const REPO_SLUG = process.env.TRAVIS_REPO_SLUG || GITHUB.repo
 const GH_TOKEN = process.env.GITHUB_TOKEN || GITHUB.token
@@ -20,7 +21,7 @@ module.exports = function () {
   }
 
   return gulp
-    .src(['src/**/*.scss', 'src/**/*.css'])
+    .src(['src/**/*.{scss,css}', ...LINT_IGNORE.stylelint])
     .pipe(gulpStylelint({
       reporters: [
         {formatter: 'string', console: true},
