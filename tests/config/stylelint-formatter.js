@@ -52,10 +52,9 @@ module.exports = function (results) {
           POST_GITHUB_COMMENT(data, REPO_SLUG, PR_ID, GH_TOKEN)
         })
         .catch(function (error) {
-          console.error(error)
+          throw new Error(error)
         })
     }
-    return results
   } else {
     POST_GITHUB_COMMIT_STATUS({
       state: 'success',
