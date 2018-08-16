@@ -41,7 +41,7 @@ module.exports = function (results) {
 
     let finalComment = '<h2>STYLELINT Report:</h2>' + report + '\n'
 
-    if (results.length > 0) {
+    if (results.length > 0 && PR_ID) {
       let sanitisedComment = sanitizeTemplateString(finalComment)
 
       GET_COMMENT_IN_MARKDOWN(JSON.parse(sanitisedComment), GH_TOKEN)

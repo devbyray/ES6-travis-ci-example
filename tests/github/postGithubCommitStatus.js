@@ -4,6 +4,8 @@ const SETTINGS = require('../config/settings')
 AXIOS.defaults.headers.post['Content-Type'] = SETTINGS.DEFAULT_AXIOS_CONTENT_TYPE
 
 module.exports = function (statusObject, repoSlug, ghCommitSHA, trBuildId, ghToken) {
+  console.log('ghCommitSHA: ', ghCommitSHA);
+
   const {
     state, description: desc, context
   } = statusObject

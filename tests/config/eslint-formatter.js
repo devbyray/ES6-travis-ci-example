@@ -11,6 +11,9 @@ const GH_TOKEN = process.env.GITHUB_TOKEN || GITHUB.token
 const GH_COMMIT = process.env.TRAVIS_COMMIT || GITHUB.commit
 const TR_BUILD_ID = process.env.TRAVIS_BUILD_ID || null
 
+console.log('GH_COMMIT: ', GH_COMMIT);
+
+
 module.exports = function (results) {
   if (results.length > 0) {
     POST_GITHUB_COMMIT_STATUS({
@@ -62,7 +65,7 @@ module.exports = function (results) {
 
     let finalComment = '<h2>ESLINT Report:</h2>' + detailedReport + '\n'
 
-    if (report.errors.length > 0 || report.warnings.length > 0) {
+    if (report.errors.length > 0 || report.warnings.length > 0 && PR_ID) {
       let sanitisedComment = sanitizeTemplateString(finalComment)
 
       GET_COMMENT_IN_MARKDOWN(JSON.parse(sanitisedComment), GH_TOKEN)
