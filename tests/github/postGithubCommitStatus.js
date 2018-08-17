@@ -15,7 +15,7 @@ module.exports = function (statusObject, repoSlug, ghCommitSHA, trBuildId, ghTok
       `https://api.github.com/repos/${repoSlug}/statuses/${ghCommitSHA}?access_token=${ghToken}`,
       {
         state,
-        target_url: `https://travis-ci.org/${repoSlug}${trBuildId ? `/${trBuildId}` : null}`,
+        target_url: `https://travis-ci.org/${repoSlug}${trBuildId ? `/builds/${trBuildId}` : null}`,
         description: desc,
         context
       }
