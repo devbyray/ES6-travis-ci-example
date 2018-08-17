@@ -28,6 +28,16 @@ Run `gulp` to run the Eslint and Stylelint task and get your JavaScript and CSS/
 
 If you run you have added Travis CI to your repository, then these tasks will automatically run on Travis.
 
+## Ignoring files from dependencies
+In the `lint-ignore.json` you can specify which files and directories needed to be ignored. Think about JS and CSS from dependencies.
+
+```
+{
+  "eslint": ["!tests/**/*.js", "!./*.js"],
+  "stylelint" : []
+}
+```
+
 ## Pull-request
 
 If you create a pull-request, Travis will run the Gulp tasks and put the errors in a PR comment so you get the feedback and error reports on 1 place.
