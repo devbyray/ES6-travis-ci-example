@@ -1,5 +1,7 @@
 # ES6 Travis CI example [![Build Status](https://travis-ci.org/raymonschouwenaar/ES6-travis-ci-example.svg?branch=master)](https://travis-ci.org/raymonschouwenaar/ES6-travis-ci-example)
 
+[![Waffle.io - Columns and their card count](https://badge.waffle.io/raymonschouwenaar/ES6-travis-ci-example.svg?columns=all)](https://waffle.io/raymonschouwenaar/ES6-travis-ci-example)
+
 The main purpose of this project is to make the feedback loop of your work as smooth as possible. You can use Gulp to lint your CSS and JavaScript.
 
 It's also created to do automatic linting when you connected your repository to [Travis-CI](https://travis-ci.org). When connected Gulp will automatically be started when you create a Pull-request.
